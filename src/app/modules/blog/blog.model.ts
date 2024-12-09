@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { PostCategories } from './blog.constant';
-import IBlog from './blog.interface';
+import { IBlog } from './blog.interface';
 
 const PostSchema = new Schema<IBlog>(
     {

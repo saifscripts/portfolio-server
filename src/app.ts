@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // routes
-app.use('/api/v1', router);
+app.use('/api', router);
 
 // test route
 app.get('/', (_req: Request, res: Response) => {
