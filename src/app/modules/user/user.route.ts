@@ -13,7 +13,7 @@ router
     .get(auth(USER_ROLE.ADMIN), UserControllers.getMe)
     .put(
         auth(USER_ROLE.ADMIN),
-        validateRequest(UserValidations.updateProfileValidationSchema),
+        validateRequest(UserValidations.updateUserValidationSchema),
         UserControllers.updateProfile,
     );
 

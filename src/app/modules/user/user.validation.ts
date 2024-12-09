@@ -1,16 +1,10 @@
 import validator from 'validator';
 import { z } from 'zod';
 
-const updateProfileValidationSchema = z.object({
+const updateUserValidationSchema = z.object({
     body: z.object({
         name: z.string().min(1, 'Name cannot be an empty string').optional(),
         email: z.string().email('Invalid email address').optional(),
-        phone: z
-            .string()
-            .refine((value) => validator.isMobilePhone(value), {
-                message: 'Invalid phone number',
-            })
-            .optional(),
     }),
 });
 
@@ -37,6 +31,6 @@ const contactUsValidationSchema = z.object({
 });
 
 export const UserValidations = {
-    updateProfileValidationSchema,
+    updateUserValidationSchema,
     contactUsValidationSchema,
 };

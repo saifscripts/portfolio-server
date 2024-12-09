@@ -3,7 +3,6 @@ import httpStatus from 'http-status';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../config';
 import AppError from '../errors/AppError';
-import { USER_STATUS } from '../modules/user/user.constant';
 import { IUserRole } from '../modules/user/user.interface';
 import { User } from '../modules/user/user.model';
 import catchAsync from '../utils/catchAsync';
@@ -49,11 +48,6 @@ const auth = (...authorizedRoles: IUserRole[]): RequestHandler => {
         // check if the user is deleted
         if (user.isDeleted) {
             throw new AppError(httpStatus.NOT_FOUND, 'User not found!');
-        }
-
-        // check if the user is blocked
-        if (user.status === USER_STATUS.BLOCKED) {
-            throw new AppError(httpStatus.BAD_REQUEST, 'User is blocked!');
         }
 
         // check if the user is authorized

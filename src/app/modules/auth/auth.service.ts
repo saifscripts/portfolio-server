@@ -40,7 +40,6 @@ const login = async (payload: ILoginCredentials) => {
         role: user?.role,
         name: user?.name,
         email: user?.email,
-        phone: user?.phone,
         avatarURL: user?.avatarURL,
     };
 
@@ -92,7 +91,6 @@ const refreshToken = async (token: string) => {
         role: user?.role,
         name: user?.name,
         email: user?.email,
-        phone: user?.phone,
         avatarURL: user?.avatarURL,
     };
 
