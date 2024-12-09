@@ -21,48 +21,12 @@ const UserSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, select: false },
-    phone: { type: String, required: true },
     avatarURL: { type: String, required: false },
     role: {
         type: String,
         required: true,
         enum: user_constant_1.UserRoles,
-        default: user_constant_1.,
     },
-    status: {
-        type: String,
-        required: true,
-        enum: user_constant_1.UserStatus,
-        default: user_constant_1.USER_STATUS.ACTIVE,
-    },
-    userType: {
-        type: String,
-        required: true,
-        enum: user_constant_1.UserType,
-        default: user_constant_1.USER_TYPE.BASIC,
-    },
-    subscription: {
-        startDate: Date,
-        endDate: Date,
-    },
-    followers: [
-        {
-            type: mongoose_1.Schema.Types.ObjectId,
-            ref: 'User',
-        },
-    ],
-    following: [
-        {
-            type: mongoose_1.Schema.Types.ObjectId,
-            ref: 'User',
-        },
-    ],
-    posts: [
-        {
-            type: mongoose_1.Schema.Types.ObjectId,
-            ref: 'Post',
-        },
-    ],
     isDeleted: { type: Boolean, default: false },
 }, {
     timestamps: true,

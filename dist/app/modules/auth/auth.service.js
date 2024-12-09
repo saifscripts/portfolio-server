@@ -19,36 +19,8 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = __importDefault(require("../../config"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const sendMail_1 = require("../../utils/sendMail");
-const user_constant_1 = require("../user/user.constant");
 const user_model_1 = require("../user/user.model");
 const auth_util_1 = require("./auth.util");
-const register = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.User.findOne({ email: payload === null || payload === void 0 ? void 0 : payload.email });
-    if (user) {
-        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'A user already exists with this email!');
-    }
-    const newUser = yield user_model_1.User.create(payload);
-    const jwtPayload = {
-        _id: newUser === null || newUser === void 0 ? void 0 : newUser._id,
-        role: newUser === null || newUser === void 0 ? void 0 : newUser.role,
-        name: newUser === null || newUser === void 0 ? void 0 : newUser.name,
-        email: newUser === null || newUser === void 0 ? void 0 : newUser.email,
-        phone: newUser === null || newUser === void 0 ? void 0 : newUser.phone,
-        avatarURL: newUser === null || newUser === void 0 ? void 0 : newUser.avatarURL,
-    };
-    // create access token
-    const accessToken = (0, auth_util_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_exp_in);
-    // create refresh token
-    const refreshToken = (0, auth_util_1.createToken)(jwtPayload, config_1.default.jwt_refresh_secret, config_1.default.jwt_refresh_exp_in);
-    return {
-        statusCode: http_status_1.default.CREATED,
-        message: 'User registered successfully',
-        data: {
-            accessToken,
-            refreshToken,
-        },
-    };
-});
 const login = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findOne({ email: payload === null || payload === void 0 ? void 0 : payload.email }).select('+password');
     // check if user exists
@@ -58,10 +30,6 @@ const login = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     // check if the user is deleted
     if (user.isDeleted) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
-    }
-    // check if the user is blocked
-    if (user.status === user_constant_1.USER_STATUS.BLOCKED) {
-        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'User is blocked!');
     }
     // check if the password matched
     const isPasswordMatched = yield user_model_1.User.comparePassword(payload === null || payload === void 0 ? void 0 : payload.password, user === null || user === void 0 ? void 0 : user.password);
@@ -73,7 +41,6 @@ const login = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         role: user === null || user === void 0 ? void 0 : user.role,
         name: user === null || user === void 0 ? void 0 : user.name,
         email: user === null || user === void 0 ? void 0 : user.email,
-        phone: user === null || user === void 0 ? void 0 : user.phone,
         avatarURL: user === null || user === void 0 ? void 0 : user.avatarURL,
     };
     // create access token
@@ -100,16 +67,11 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
     if (user.isDeleted) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
     }
-    // check if the user is blocked
-    if (user.status === user_constant_1.USER_STATUS.BLOCKED) {
-        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'User is blocked!');
-    }
     const jwtPayload = {
         _id: user === null || user === void 0 ? void 0 : user._id,
         role: user === null || user === void 0 ? void 0 : user.role,
         name: user === null || user === void 0 ? void 0 : user.name,
         email: user === null || user === void 0 ? void 0 : user.email,
-        phone: user === null || user === void 0 ? void 0 : user.phone,
         avatarURL: user === null || user === void 0 ? void 0 : user.avatarURL,
     };
     // create access token
@@ -150,9 +112,6 @@ const forgetPassword = (email) => __awaiter(void 0, void 0, void 0, function* ()
     if (user === null || user === void 0 ? void 0 : user.isDeleted) {
         throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'User not found!');
     }
-    if ((user === null || user === void 0 ? void 0 : user.status) === user_constant_1.USER_STATUS.BLOCKED) {
-        throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'The user is blocked!');
-    }
     const jwtPayload = {
         id: user._id,
         role: user.role,
@@ -188,9 +147,6 @@ const resetPassword = (payload) => __awaiter(void 0, void 0, void 0, function* (
     if (user === null || user === void 0 ? void 0 : user.isDeleted) {
         throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'User not found!');
     }
-    if ((user === null || user === void 0 ? void 0 : user.status) === user_constant_1.USER_STATUS.BLOCKED) {
-        throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'The user is blocked!');
-    }
     const hashedPassword = yield bcrypt_1.default.hash(password, Number(config_1.default.bcrypt_salt_rounds));
     const updatedUser = yield user_model_1.User.findByIdAndUpdate(decodedUser.id, {
         password: hashedPassword,
@@ -205,7 +161,6 @@ const resetPassword = (payload) => __awaiter(void 0, void 0, void 0, function* (
     };
 });
 exports.AuthServices = {
-    register,
     login,
     refreshToken,
     changePassword,

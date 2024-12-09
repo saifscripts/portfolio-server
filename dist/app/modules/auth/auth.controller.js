@@ -16,39 +16,33 @@ exports.AuthControllers = void 0;
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const auth_service_1 = require("./auth.service");
-// Route: /api/v1/auth/register (POST)
-const register = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield auth_service_1.AuthServices.register(req.body);
-    (0, sendResponse_1.default)(res, result);
-}));
-// Route: /api/v1/auth/login (POST)
+// POST: /api/auth/login
 const login = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.AuthServices.login(req.body);
     (0, sendResponse_1.default)(res, result);
 }));
-// Route: /api/v1/auth/refresh-token (POST)
+// POST: /api/auth/refresh-token
 const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { refreshToken } = req.cookies;
     const result = yield auth_service_1.AuthServices.refreshToken(refreshToken);
     (0, sendResponse_1.default)(res, result);
 }));
-// Route: /api/v1/auth/change-password (PUT)
+// PUT: /api/auth/change-password
 const changePassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.AuthServices.changePassword(req.user._id, req.body);
     (0, sendResponse_1.default)(res, result);
 }));
-// Route: /api/v1/auth/forget-password (POST)
+// POST: /api/auth/forget-password
 const forgetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.AuthServices.forgetPassword(req.body.email);
     (0, sendResponse_1.default)(res, result);
 }));
-// Route: /api/v1/auth/reset-password (PUT)
+// PUT: /api/auth/reset-password
 const resetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.AuthServices.resetPassword(req.body);
     (0, sendResponse_1.default)(res, result);
 }));
 exports.AuthControllers = {
-    register,
     login,
     refreshToken,
     changePassword,

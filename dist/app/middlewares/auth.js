@@ -16,7 +16,6 @@ const http_status_1 = __importDefault(require("http-status"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = __importDefault(require("../config"));
 const AppError_1 = __importDefault(require("../errors/AppError"));
-const user_constant_1 = require("../modules/user/user.constant");
 const user_model_1 = require("../modules/user/user.model");
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const auth = (...authorizedRoles) => {
@@ -43,10 +42,6 @@ const auth = (...authorizedRoles) => {
         // check if the user is deleted
         if (user.isDeleted) {
             throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found!');
-        }
-        // check if the user is blocked
-        if (user.status === user_constant_1.USER_STATUS.BLOCKED) {
-            throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'User is blocked!');
         }
         // check if the user is authorized
         if (authorizedRoles && !authorizedRoles.includes(user.role)) {

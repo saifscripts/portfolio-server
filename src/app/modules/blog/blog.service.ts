@@ -3,7 +3,6 @@ import httpStatus from 'http-status';
 import mongoose from 'mongoose';
 import QueryBuilder from '../../builders/QueryBuilder';
 import AppError from '../../errors/AppError';
-import { User } from '../user/user.model';
 import { BlogSearchableFields } from './blog.constant';
 import { IBlog } from './blog.interface';
 import { Post } from './blog.model';
@@ -102,7 +101,6 @@ const getBlogFromDB = async (blogId: string) => {
 
 const updateBlogIntoDB = async (
     blogId: string,
-    authorId: mongoose.Types.ObjectId, // retrieved from token
     payload: Partial<IBlog>,
     featuredImage: Express.Multer.File,
 ) => {
@@ -110,13 +108,6 @@ const updateBlogIntoDB = async (
 
     if (!blog) {
         throw new AppError(httpStatus.NOT_FOUND, 'Post not found!');
-    }
-
-    if (blog.author.toString() !== authorId.toString()) {
-        throw new AppError(
-            httpStatus.UNAUTHORIZED,
-            'You are not authorized to update this blog!',
-        );
     }
 
     if (!featuredImage?.path && payload?.featuredImage === undefined) {
@@ -127,11 +118,9 @@ const updateBlogIntoDB = async (
         payload.featuredImage = payload.featuredImage || featuredImage?.path;
     }
 
-    const updatedBlog = await Post.findOneAndUpdate(
-        { _id: blogId, author: authorId },
-        payload,
-        { new: true },
-    );
+    const updatedBlog = await Post.findOneAndUpdate({ _id: blogId }, payload, {
+        new: true,
+    });
 
     if (!updatedBlog) {
         throw new AppError(httpStatus.NOT_FOUND, 'Blog not found!');
@@ -144,69 +133,28 @@ const updateBlogIntoDB = async (
     };
 };
 
-const deleteBlogFromDB = async (
-    blogId: string,
-    authorId: mongoose.Types.ObjectId, // retrieved from token
-) => {
+const deleteBlogFromDB = async (blogId: string) => {
     const blog = await Post.findById(blogId);
 
     if (!blog) {
         throw new AppError(httpStatus.NOT_FOUND, 'Blog not found!');
     }
 
-    if (blog.author.toString() !== authorId.toString()) {
-        throw new AppError(
-            httpStatus.UNAUTHORIZED,
-            'You are not authorized to delete this blog!',
-        );
+    const deletedBlog = await Post.findOneAndUpdate(
+        { _id: blogId },
+        { isDeleted: true },
+        { new: true },
+    );
+
+    if (!deletedBlog) {
+        throw new AppError(httpStatus.NOT_FOUND, 'Blog not found!');
     }
 
-    const session = await mongoose.startSession();
-
-    try {
-        session.startTransaction();
-
-        // delete post from db
-        const deletedBlog = await Post.findOneAndUpdate(
-            { _id: blogId, author: authorId },
-            { isDeleted: true },
-            { new: true, session },
-        );
-
-        if (!deletedBlog) {
-            throw new AppError(httpStatus.NOT_FOUND, 'Blog not found!');
-        }
-
-        // removed post id from author's posts
-        const updatedUser = await User.findByIdAndUpdate(
-            authorId,
-            {
-                $pull: { posts: blogId },
-            },
-            { session },
-        );
-
-        if (!updatedUser) {
-            throw new AppError(
-                httpStatus.INTERNAL_SERVER_ERROR,
-                'Failed to delete post!',
-            );
-        }
-
-        // commit transaction and end session
-        await session.commitTransaction();
-        await session.endSession();
-
-        return {
-            statusCode: httpStatus.OK,
-            message: 'Blog deleted successfully!',
-            data: deletedBlog,
-        };
-    } catch (error) {
-        await session.abortTransaction();
-        await session.endSession();
-        throw error;
-    }
+    return {
+        statusCode: httpStatus.OK,
+        message: 'Blog deleted successfully!',
+        data: deletedBlog,
+    };
 };
 
 export const BlogServices = {

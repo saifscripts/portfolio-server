@@ -34,7 +34,6 @@ const getBlog = catchAsync(async (req, res) => {
 const updateBlog = catchAsync(async (req, res) => {
     const result = await BlogServices.updateBlogIntoDB(
         req.params.id,
-        req.user._id,
         req.body,
         req.file as Express.Multer.File,
     );
@@ -43,10 +42,7 @@ const updateBlog = catchAsync(async (req, res) => {
 
 // Route: /api/v1/blogs/:id (DELETE)
 const deleteBlog = catchAsync(async (req, res) => {
-    const result = await BlogServices.deleteBlogFromDB(
-        req.params.id,
-        req.user._id,
-    );
+    const result = await BlogServices.deleteBlogFromDB(req.params.id);
     sendResponse(res, result);
 });
 

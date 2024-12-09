@@ -1,21 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CONTACT_FORM_MESSAGE = exports.UserType = exports.USER_TYPE = exports.UserStatus = exports.USER_STATUS = exports.UserRoles = exports.USER_ROLE = void 0;
+exports.CONTACT_FORM_MESSAGE = exports.UserRoles = exports.USER_ROLE = void 0;
 exports.USER_ROLE = {
-    ADMIN: 'admin',
-    USER: 'user',
+    ADMIN: 'ADMIN',
 };
-exports.UserRoles = ['admin', 'user'];
-exports.USER_STATUS = {
-    ACTIVE: 'active',
-    BLOCKED: 'blocked',
-};
-exports.UserStatus = ['active', 'blocked'];
-exports.USER_TYPE = {
-    BASIC: 'basic',
-    PREMIUM: 'premium',
-};
-exports.UserType = ['basic', 'premium'];
+exports.UserRoles = ['ADMIN'];
 exports.CONTACT_FORM_MESSAGE = `<!doctype html>
 <html lang="en">
     <head>

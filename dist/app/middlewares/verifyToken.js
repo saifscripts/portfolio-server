@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = __importDefault(require("../config"));
-const user_constant_1 = require("../modules/user/user.constant");
 const user_model_1 = require("../modules/user/user.model");
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const verifyToken = (0, catchAsync_1.default)((req, _res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -36,11 +35,6 @@ const verifyToken = (0, catchAsync_1.default)((req, _res, next) => __awaiter(voi
         }
         // check if the user is deleted
         if (user.isDeleted) {
-            next();
-            return;
-        }
-        // check if the user is blocked
-        if (user.status === user_constant_1.USER_STATUS.BLOCKED) {
             next();
             return;
         }

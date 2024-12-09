@@ -1,6 +1,5 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../config';
-import { USER_STATUS } from '../modules/user/user.constant';
 import { User } from '../modules/user/user.model';
 import catchAsync from '../utils/catchAsync';
 
@@ -35,11 +34,6 @@ const verifyToken = catchAsync(async (req, _res, next) => {
             return;
         }
 
-        // check if the user is blocked
-        if (user.status === USER_STATUS.BLOCKED) {
-            next();
-            return;
-        }
         req.user = user;
         next();
     } catch {
